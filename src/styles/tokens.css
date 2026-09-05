@@ -1,0 +1,43 @@
+/* ==========================================================================
+   DESIGN TOKENS
+   Every colour, font, and spacing value for the whole site lives here.
+   Change a value once, it updates everywhere the token is used.
+   ========================================================================== */
+
+:root {
+  /* ---- Colours ---- */
+  --color-bg: #0e0e0e;          /* near-black background */
+  --color-bg-alt: #161616;      /* slightly lighter panel background */
+  --color-text: #f2f2f2;        /* off-white body text */
+  --color-text-muted: #a3a3a3;  /* dimmer text for captions/labels */
+  --color-accent: #ff7a00;      /* Signal Orange — the ONE accent colour */
+  --color-accent-hover: #ff9433; /* lighter orange for hover states */
+  --color-border: #2a2a2a;      /* subtle dividing lines */
+
+  /* ---- Fonts ---- */
+  --font-display: "Rubik Dirt", "Archivo Black", "Arial Black", sans-serif; /* big headings — rugged/textured, use LARGE only */
+  --font-body: "Inter", -apple-system, sans-serif;            /* body text */
+
+  /* ---- Type scale (mobile-first; grows on larger screens elsewhere) ---- */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.5rem;
+  --text-3xl: 3.5rem;
+  --text-hero: 4.5rem;
+
+  /* ---- Spacing scale ---- */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+
+  /* ---- Motion ---- */
+  --ease-default: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 0.2s;
+  --duration-default: 0.4s;
+}
