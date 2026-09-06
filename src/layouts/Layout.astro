@@ -16,6 +16,129 @@ const { title } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
     <slot />
+
+    <style>
+      /* ---- Custom cursor: hidden by default, only shown on fine-pointer, non-reduced-motion devices ---- */
+      .cursor-dot,
+      .cursor-ring {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        border-radius: 50%;
+        z-index: 9999;
+        display: none;
+        will-change: transform;
+      }
+
+      .cursor-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--color-accent);
+        transform: translate(-50%, -50%);
+      }
+
+      .cursor-ring {
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--color-accent);
+        transform: translate(-50%, -50%);
+        transition: width 0.2s var(--ease-default), height 0.2s var(--ease-default),
+                    opacity 0.2s var(--ease-default);
+        opacity: 0.6;
+      }
+
+      .cursor-ring.is-hovering {
+        width: 52px;
+        height: 52px;
+        opacity: 1;
+      }
+
+      @media (pointer: fine) {
+        html:not(.reduced-motion) .cursor-dot,
+        html:not(.reduced-motion) .cursor-ring {
+          display: block;
+        }
+        html:not(.reduced-motion) body {
+          cursor: none;
+        }
+        html:not(.reduced-motion) a,
+        html:not(.reduced-motion) button {
+          cursor: none;
+        }
+      }
+    </style>
+
+    <script>
+      // ---- Feature checks ----
+      var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var hasFinePointer = window.matchMedia('(pointer: fine)').matches;
+
+      if (prefersReducedMotion) {
+        document.documentElement.classList.add('reduced-motion');
+      }
+
+      // ---- Custom cursor ----
+      if (hasFinePointer && !prefersReducedMotion) {
+        var dot = document.getElementById('cursorDot');
+        var ring = document.getElementById('cursorRing');
+
+        var mouseX = 0, mouseY = 0;
+        var ringX = 0, ringY = 0;
+
+        window.addEventListener('mousemove', function (e) {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+          if (dot) {
+            dot.style.transform = 'translate(' + mouseX + 'px, ' + mouseY + 'px) translate(-50%, -50%)';
+          }
+        });
+
+        function animateRing() {
+          ringX += (mouseX - ringX) * 0.18;
+          ringY += (mouseY - ringY) * 0.18;
+          if (ring) {
+            ring.style.transform = 'translate(' + ringX + 'px, ' + ringY + 'px) translate(-50%, -50%)';
+          }
+          requestAnimationFrame(animateRing);
+        }
+        requestAnimationFrame(animateRing);
+
+        // Grow the ring on hover over links/buttons
+        document.addEventListener('mouseover', function (e) {
+          var target = e.target;
+          if (target && target.closest && target.closest('a, button')) {
+            ring && ring.classList.add('is-hovering');
+          }
+        });
+        document.addEventListener('mouseout', function (e) {
+          var target = e.target;
+          if (target && target.closest && target.closest('a, button')) {
+            ring && ring.classList.remove('is-hovering');
+          }
+        });
+      }
+
+      // ---- Smooth scroll (Lenis) ----
+      if (!prefersReducedMotion) {
+        import('lenis').then(function (mod) {
+          var Lenis = mod.default;
+          var lenis = new Lenis({
+            duration: 1.1,
+            smoothWheel: true,
+          });
+
+          function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+          }
+          requestAnimationFrame(raf);
+        });
+      }
+    </script>
   </body>
 </html>
